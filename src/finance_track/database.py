@@ -5,7 +5,7 @@ from __future__ import annotations
 import contextlib
 import sqlite3
 from datetime import datetime
-from typing import Any, Generator, Union, Optional
+from typing import Any, Generator, Optional, Union
 
 DATABASE_PATH = "finances.db"
 
