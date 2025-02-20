@@ -1,11 +1,11 @@
 [project]
-name = "python-package-template"
+name = "finance-tracker"
 authors = [
-    { name = "YOUR NAME HERE", email = "your_email@mail.com" },
+    { name = "Jaime Gonzalez Gomez", email = "jim.gomez.dnn@gmail.com" },
 ]
-description = "CHANGEME"
+description = "Simple finance tracker"
 dependencies = [
-    # add all dependencies of your package here
+#    "bokeh"
 ]
 requires-python = ">=3.9"
 license = { text = "MIT license" }
@@ -16,21 +16,24 @@ classifiers = [
 
 [project.urls]
 Homepage = "http://github/USERNAME/REPO.git"
-Documentation = "https://readthedocs.org"
+#Documentation = "https://readthedocs.org"
 
-# you can add CLI tools which should be installed when installing the package
 # [project.scripts]
 # cli-command = "pkg_name.module:function"
 
 [project.optional-dependencies]
-dev = ["ruff", "pytest", "mkdocs-material"]
+dev = [
+    "ruff",
+#    "pytest",
+#    "mkdocs-material"
+]
 
 [build-system]
 requires = ["setuptools>=70.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.dynamic]
-version = { attr = "pkg_name._version.__version__" }
+version = { attr = "finance_track._version.__version__" }
 readme = { file = ["README.md"], content-type = "text/markdown" }
 
 [tool.setuptools.packages.find]
