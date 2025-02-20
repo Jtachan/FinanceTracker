@@ -5,7 +5,7 @@ from __future__ import annotations
 import contextlib
 import sqlite3
 from datetime import datetime
-from typing import Any, Generator, Union
+from typing import Any, Generator, Union, Optional
 
 DATABASE_PATH = "finances.db"
 
@@ -117,3 +117,59 @@ def add_expense(
             print(f"Expense added successfully: {description} ({amount}) on {date}")
         except sqlite3.IntegrityError as err:
             print(f"Unable adding expense due to error: {err}")
+
+
+def extract_total_date_range() -> Optional[tuple[str, str]]:
+    """Extracts from the table the total date range among all the entries."""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT MIN(date) AS min_date, MAX(date) AS max_date FROM expenses"
+        )
+        result = cursor.fetchone()
+
+    if result:
+        return result["min_date"], result["max_date"]
+    return None
+
+
+def fetch_expenses(
+    category: Optional[Union[str, int]] = None,
+    date_range: Optional[tuple[str, str]] = None,
+) -> list[tuple]:
+    """Fetching expenses from the database.
+    Optional filters of category & date can be provided.
+    """
+    conditions, params = [], []
+    if date_range:
+        try:
+            datetime.strptime(date_range[0], "%Y-%m-%d")
+            datetime.strptime(date_range[1], "%Y-%m-%d")
+        except ValueError as err:
+            raise ValueError(
+                "Invalid date format. Please use ISO format (YYYY-MM-DD)."
+            ) from err
+        conditions.append("date BETWEEN ? AND ?")
+        params.extend(date_range)
+
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+
+        if category:
+            if isinstance(category, str):
+                cursor.execute("SELECT id FROM categories WHERE name = ?", (category,))
+                res = cursor.fetchone()
+                if not res:
+                    raise ValueError(f"Category '{category}' does not exist.")
+                category_id = res["id"]
+            else:
+                category_id = category
+            conditions.append("category_id = ?")
+            params.append(category_id)
+
+        query = "SELECT * FROM expenses"
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
+        cursor.execute(query, params)
+
+    return cursor.fetchall()
