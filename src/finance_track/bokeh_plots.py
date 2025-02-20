@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
-import pandas as pd
+from typing import TYPE_CHECKING
+
 from bokeh.models import ColumnDataSource
 from bokeh.palettes import Category10
 from bokeh.plotting import figure
 from bokeh.transform import cumsum
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def _get_empty_figure() -> figure:
@@ -26,7 +30,7 @@ def create_time_line_chart(data: pd.DataFrame) -> figure:
         width=800,
         height=400,
         tools="hover",
-        tooltips=[("Date", "@date{%F}"), ("Amount", "@amount")]
+        tooltips=[("Date", "@date{%F}"), ("Amount", "@amount")],
     )
 
     data = data.groupby(data["date"].dt.date).sum().reset_index()
@@ -77,7 +81,7 @@ def create_balance_bar_chart(data: pd.DataFrame) -> figure:
             ("Month", "@month"),
             ("Income", "@Income"),
             ("Expenses", "@Expenses"),
-        ]
+        ],
     )
 
     p.vbar_stack(
@@ -96,7 +100,10 @@ def create_balance_bar_chart(data: pd.DataFrame) -> figure:
     return p
 
 
-def create_pie_chart(data: pd.DataFrame) -> figure:
+def create_categorical_pie_chart(data: pd.DataFrame) -> figure:
+    """Plotting a pie chart representing all the expenses by category.
+    Incomes are excluded at this plot.
+    """
     if data.empty:
         return _get_empty_figure()
 
