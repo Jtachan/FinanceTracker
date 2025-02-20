@@ -1,0 +1,4 @@
+# package all files within the src directory
+graft src
+# exclude all bytecode files
+global-exclude *.py[cod]

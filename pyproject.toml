@@ -1,0 +1,37 @@
+[project]
+name = "python-package-template"
+authors = [
+    { name = "YOUR NAME HERE", email = "your_email@mail.com" },
+]
+description = "CHANGEME"
+dependencies = [
+    # add all dependencies of your package here
+]
+requires-python = ">=3.9"
+license = { text = "MIT license" }
+dynamic = ["readme", "version"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "http://github/USERNAME/REPO.git"
+Documentation = "https://readthedocs.org"
+
+# you can add CLI tools which should be installed when installing the package
+# [project.scripts]
+# cli-command = "pkg_name.module:function"
+
+[project.optional-dependencies]
+dev = ["ruff", "pytest", "mkdocs-material"]
+
+[build-system]
+requires = ["setuptools>=70.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = { attr = "pkg_name._version.__version__" }
+readme = { file = ["README.md"], content-type = "text/markdown" }
+
+[tool.setuptools.packages.find]
+where = ["src"]

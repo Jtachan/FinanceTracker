@@ -1,0 +1,65 @@
+[lint]
+# enable some checks
+select = [
+    # Basic
+    "PL", # pylint checks
+    "F",  # Pyflake (flake8) checks
+    "B",  # flake8-bugbear checks
+    "I",  # isort checks
+
+    # Extra checks
+    "D",   # pydocstyle checks
+    "W",   # pycodestyle warnings
+    "E",   # pycodestyle errors
+    "N",   # pep8-naming
+    "ANN", # flake8-annotations (typing)
+    "BLE", # flake8-blind-except
+    "A",   # flake8-builtins
+    "C4",  # flake8-comprehensions
+    "T10", # flake8-debugger
+    "FA",  # flake8-future-annotations
+    "ISC", # flake8-implicit-str-concat
+    "ICN", # flake8-import-conventions
+    "G",   # flake8-logging-format
+    "PIE", # flake8-pie
+    "PT",  # flake8-pytest-style
+    "Q",   # flake8-quotes
+    "RET", # flake8-raise
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+    "ARG", # flake8-unused-arguments
+    "TRY", # tryceratops
+    "NPY", # NumPy-specific rules
+    "LOG", # flake8-logging
+    "RUF", # Ruff-specific rules
+]
+
+ignore = [
+    "ANN002",  # missing-type-args
+    "ANN003",  # missing-type-kwargs
+    "ANN202",  # missing-return-none
+    "ANN204",  # missing-return-none
+    "D205",    # blank-line-after-summary
+    "D401",    # non-imperative-mood
+    "PLR2004", # magic-value-comparison
+    "PLW1641", # eq-without-hash
+    "PLR6301", # no-self-use
+    "PLR0913", # too-many-arguments
+    "PLR0904", # too-many-public-methods
+    "PLR0916", # too-many-boolean-expressions
+    "PLR0912", # too-many-branches
+    "PLR0904", # too-many-public-methods
+    "PLR0911", # too-many-return-statements
+    "PLR0915", # too-many-statements
+    "PLW0120", # useless-else-on-loop
+    "TRY003",  # raise-vanilla-args -> we want to create our own message for certain exceptions
+    "RET505",  # superfluous-else-return -> extra "else" helps to show the programmers intention that this code belongs to the previous "if"
+    "RET506",  # superfluous-else-raise -> extra "else" helps to show the programmers intention that this code belongs to the previous "if"
+    "ISC001",  # ruff warns that this rule might conflict with the auto-formatting
+]
+
+[lint.per-file-ignores]
+"unittests/*.py" = ["ANN"] # annotations in pytest test cases are not needed
+
+[lint.pydocstyle]
+convention = "numpy" # we use numpy style docstrings at smartmicro

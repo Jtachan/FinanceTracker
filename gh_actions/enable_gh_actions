@@ -1,0 +1,2 @@
+Update the folder name from "gh_actions" to ".github"
+Then, all the actions should run by themselves.

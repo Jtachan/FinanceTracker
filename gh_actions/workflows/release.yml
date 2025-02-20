@@ -1,0 +1,31 @@
+name: PyPI release
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-publish:
+      name: upload release to PyPI
+      runs-on: ubuntu-latest
+      environment: release
+      permissions:
+        # IMPORTANT: this permission is mandatory for trusted publishing
+        id-token: write
+      steps:
+        # retrieve your distributions here
+        - uses: actions/checkout@v3
+
+        - name: Set up Python
+          uses: actions/setup-python@v4
+          with:
+            python-version: 3.x
+
+        - name: Install build
+          run: python3 -m pip install build --user
+
+        - name: Build binary wheel
+          run: python3 -m build --sdist --wheel --outdir dist/ .
+
+        - name: Publish package distributions to PyPI
+          uses: pypa/gh-action-pypi-publish@release/v1
