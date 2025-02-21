@@ -1,0 +1,4 @@
+ruff
+pygithub
+requests
+python-dotenv

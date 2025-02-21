@@ -22,13 +22,6 @@ Homepage = "http://github/Jtachan/FinanceTracker.git"
 # [project.scripts]
 # cli-command = "pkg_name.module:function"
 
-[project.optional-dependencies]
-dev = [
-    "ruff",
-#    "pytest",
-#    "mkdocs-material"
-]
-
 [build-system]
 requires = ["setuptools>=70.0", "wheel"]
 build-backend = "setuptools.build_meta"
