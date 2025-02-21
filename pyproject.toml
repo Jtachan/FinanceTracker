@@ -5,7 +5,8 @@ authors = [
 ]
 description = "Simple finance tracker"
 dependencies = [
-#    "bokeh"
+    "bokeh",
+    "pandas",
 ]
 requires-python = ">=3.9"
 license = { text = "MIT license" }
@@ -15,18 +16,11 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "http://github/USERNAME/REPO.git"
+Homepage = "http://github/Jtachan/FinanceTracker.git"
 #Documentation = "https://readthedocs.org"
 
 # [project.scripts]
 # cli-command = "pkg_name.module:function"
-
-[project.optional-dependencies]
-dev = [
-    "ruff",
-#    "pytest",
-#    "mkdocs-material"
-]
 
 [build-system]
 requires = ["setuptools>=70.0", "wheel"]
