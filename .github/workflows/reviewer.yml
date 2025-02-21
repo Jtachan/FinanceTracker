@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests
+          pip install requests pygithub 
 
       - name: Run DS code reviewer
         env:
