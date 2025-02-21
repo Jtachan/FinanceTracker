@@ -38,5 +38,8 @@ def post_comment_to_pr(comment):
 
 if __name__ == "__main__":
     prompt = "Review this code for potential issues and suggest improvements."
+    print(f"{REPO_NAME=}")
+    print(f"{PR_NUMBER=}")
+
     review_comment = get_code_suggestion(prompt)
     post_comment_to_pr(review_comment)
