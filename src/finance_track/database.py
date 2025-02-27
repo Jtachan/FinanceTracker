@@ -51,7 +51,7 @@ def initialize_database() -> None:
                 amount REAL NOT NULL,
                 date TEXT NOT NULL,  -- Store date as ISO format (YYYY-MM-DD)
                 description TEXT,
-                FOREIGN KEY (category_id) REFERENCE categories (id)
+                FOREIGN KEY (category_id) REFERENCES categories (id)
             )
         """)
 
@@ -153,6 +153,8 @@ def fetch_expenses(
         params.extend(date_range)
 
     with get_db_connection() as conn:
+        # Enable row-factory for dictionary-like access.
+        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
         if category:
@@ -172,4 +174,4 @@ def fetch_expenses(
             query += " WHERE " + " AND ".join(conditions)
         cursor.execute(query, params)
 
-    return cursor.fetchall()
+        return cursor.fetchall()
