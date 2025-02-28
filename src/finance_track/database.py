@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import sqlite3
-# from datetime import datetime
-# from typing import Any, Generator, Optional, Union
-
+from datetime import datetime
+from typing import Optional
 
 DEFAULT_CATEGORIES = [
-    "Food", "Transportation", "Housing", "Entertainment", "Utilities", "Other"
+    "Food",
+    "Transportation",
+    "Housing",
+    "Entertainment",
+    "Utilities",
+    "Other",
 ]
 
 
@@ -26,7 +30,7 @@ class DatabaseManager:
         except sqlite3.Error as err:
             raise RuntimeError("Database connection error") from err
 
-    def create_tables(self):
+    def create_tables(self) -> None:
         """Creation of the necessary tables if they don't exist."""
         cursor = self.conn.cursor()
 
@@ -59,3 +63,44 @@ class DatabaseManager:
             self.conn.commit()
         except sqlite3.Error as err:
             raise RuntimeError("Table creation error") from err
+
+    def add_expense(
+        self,
+        amount: float,
+        category_name: str,
+        date: Optional[str] = None,
+        description: str = "",
+    ) -> None:
+        """Add a new expense to the table."""
+        # Data initialization & check:
+        if date is None:
+            date = datetime.now().strftime("%Y-%m-%d")
+        try:
+            datetime.strptime(date, "%Y-%m-%d")
+        except ValueError:
+            print("Invalid date format. Please use ISO format (YYYY-MM-DD).")
+            return
+
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT id FROM categories WHERE name = ?", (category_name,))
+            result = cursor.fetchone()
+
+            if result:
+                category_id = result["id"]
+            else:
+                # Insert new category:
+                cursor.execute(
+                    "INSERT INTO categories (name) VALUES (?)", (category_name,)
+                )
+                category_id = cursor.lastrowid
+
+            # Insert expense:
+            cursor.execute(
+                "INSERT INTO expenses (amount, description, date, category_id) "
+                "VALUES (?, ?, ?, ?)",
+                (amount, description, date, category_id),
+            )
+
+        except sqlite3.Error as err:
+            print(f"Error adding expense: {err}")
