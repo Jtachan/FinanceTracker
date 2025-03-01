@@ -104,3 +104,143 @@ class DatabaseManager:
 
         except sqlite3.Error as err:
             print(f"Error adding expense: {err}")
+
+    def get_all_expenses(self) -> list:
+        """Extract all expenses with category names."""
+        expenses = []
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                SELECT e.id, e.amount, e.description, e.date, c.name as category
+                FROM expenses e
+                JOIN categories c ON e.category_id = c.id
+                ORDER BY e.date DESC
+            """)
+            expenses = cursor.fetchall()
+        except sqlite3.Error as err:
+            print(f"Error while getting expenses: {err}")
+        return expenses
+
+    def get_expenses_by_category(self) -> list:
+        """Get total expenses grouped by categories."""
+        expenses = []
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                SELECT c.name as category, SUM(e.amount) as total
+                FROM expenses e
+                JOIN categories c ON e.category_id = c.id
+                GROUP BY c.name
+                ORDER BY total DESC
+            """)
+            expenses = cursor.fetchall()
+        except sqlite3.Error as err:
+            print(f"Error while getting expenses by category: {err}")
+        return expenses
+
+    def get_expenses_by_date_range(self, start_date: str, end_date: str) -> list:
+        """Extracting expenses within a date range. Dates must be in ISO format."""
+        expenses = []
+        try:
+            datetime.strptime(start_date, "%Y-%m-%d")
+            datetime.strptime(end_date, "%Y-%m-%d")
+        except ValueError:
+            print("Invalid date format. Provide the dates as 'YYYY-MM-DD'.")
+            return expenses
+
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(
+                """
+                SELECT e.id, e.amount, e.description, e.date, c.name as category
+                FROM expenses e
+                JOIN categories c ON e.category_id = c.id
+                WHERE e.date BETWEEN ? AND ?
+                ORDER BY e.date
+                """,
+                (start_date, end_date),
+            )
+            expenses = cursor.fetchall()
+        except sqlite3.Error as err:
+            print(f"Error while getting expenses by date range: {err}")
+        return expenses
+
+    def update_expense(
+        self,
+        expense_id: int,
+        amount: Optional[float] = None,
+        description: Optional[str] = None,
+        category_name: Optional[str] = None,
+    ) -> bool:
+        """Updating an existing expense. Only the provided information is modified.
+
+        Returns
+        -------
+        boolean defining if the expense was updated.
+        """
+        if amount is None and description is None and category_name is None:
+            print("No information was provided to update the expense.")
+            return False
+
+        status = False
+        try:
+            cursor = self.conn.cursor()
+
+            cursor.execute("SELECT * FROM expenses WHERE id = ?", (expense_id,))
+            expense = cursor.fetchone()
+
+            if not expense:
+                print(f"Expense with ID {expense_id} not found.")
+                return status
+
+            conditions, params = [], []
+            if amount is not None:
+                conditions.append("amount = ?")
+                params.append(amount)
+
+            if description is not None:
+                conditions.append(" description = ?")
+                params.append(description)
+
+            if category_name is not None:
+                cursor.execute(
+                    "SELECT id FROM categories WHERE name = ?", (category_name,)
+                )
+                result = cursor.fetchone()
+
+                if result:
+                    category_id = result["id"]
+                else:
+                    cursor.execute(
+                        "INSERT INTO categories (name) VALUES (?)", (category_name,)
+                    )
+                    category_id = cursor.lastrowid
+
+                conditions.append("category_id = ?")
+                params.append(category_id)
+
+            query = "UPDATE expenses SET " + " ".join(conditions) + " WHERE id = ?"
+            cursor.execute(query, (*params, expense_id))
+            self.conn.commit()
+            status = True
+        except sqlite3.Error as err:
+            print(f"Error while updating an expense: {err}")
+        return status
+
+    def delete_expense(self, expense_id: int) -> bool:
+        """Deleting an expense by ID. A boolean is returned defining whether the
+        expense was deleted.
+        """
+        status = False
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("DELETE FROM expenses WHERE id = ?", (expense_id,))
+            self.conn.commit()
+            status = cursor.rowcount > 0
+        except sqlite3.Error as err:
+            print(f"Error while deleting expense: {err}")
+        return status
+
+    def close(self) -> None:
+        """Closing the database connection."""
+        self.conn.close()
