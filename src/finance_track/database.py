@@ -70,7 +70,7 @@ class DatabaseManager:
         category_name: str,
         date: Optional[str] = None,
         description: str = "",
-    ) -> None:
+    ) -> Optional[int]:
         """Add a new expense to the table."""
         # Data initialization & check:
         if date is None:
@@ -79,7 +79,7 @@ class DatabaseManager:
             datetime.strptime(date, "%Y-%m-%d")
         except ValueError:
             print("Invalid date format. Please use ISO format (YYYY-MM-DD).")
-            return
+            return None
 
         try:
             cursor = self.conn.cursor()
@@ -101,9 +101,12 @@ class DatabaseManager:
                 "VALUES (?, ?, ?, ?)",
                 (amount, description, date, category_id),
             )
+            self.conn.commit()
+            return cursor.lastrowid
 
         except sqlite3.Error as err:
             print(f"Error adding expense: {err}")
+            return None
 
     def get_all_expenses(self) -> list:
         """Extract all expenses with category names."""
@@ -171,6 +174,7 @@ class DatabaseManager:
         amount: Optional[float] = None,
         description: Optional[str] = None,
         category_name: Optional[str] = None,
+        date: Optional[str] = None,
     ) -> bool:
         """Updating an existing expense. Only the provided information is modified.
 
@@ -218,6 +222,10 @@ class DatabaseManager:
 
                 conditions.append("category_id = ?")
                 params.append(category_id)
+
+            if date is not None:
+                conditions.append("date = ?")
+                params.append(date)
 
             query = "UPDATE expenses SET " + " ".join(conditions) + " WHERE id = ?"
             cursor.execute(query, (*params, expense_id))

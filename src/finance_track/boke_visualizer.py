@@ -118,9 +118,7 @@ class ExpenseVisualizer:
         # Creating a layout:
         if pie and trend:
             plt.output_file(output_filename)
-            dashboard = gridplot(
-                children=[[pie, trend]], width=600, height=400
-            )
+            dashboard = gridplot(children=[[pie, trend]], width=600, height=400)
             plt.show(dashboard)
         else:
             print("Not enough data to generate visualizations")
