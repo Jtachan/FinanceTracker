@@ -76,15 +76,14 @@ class CliFinanceTrack:
         expenses = self._db.get_all_expenses()
         if expenses:
             print(
-                "\nAll expenses:\n"
-                f"{'ID':<5} {'Date':<12} {'Amount':<10} {'Category':<15} {'Description'}"
-                + "-"
-                * 60
+                f"\nAll expenses:\n{'ID':<3} | {'Date':<12} | {'Amount':<10} | "
+                f"{'Category':<15} | {'Description'}"
             )
+            print("-" * 70)
             for expense in expenses:
                 print(
-                    f"{expense['id']:<5} {expense['date']:<12} "
-                    f"{expense['amount']:<9.2f}€ {expense['category']:<15} "
+                    f"{expense['id']:<3} | {expense['date']:<12} | "
+                    f"{expense['amount']:<9.2f}€ | {expense['category']:<15} | "
                     f"{expense['description']}"
                 )
         else:

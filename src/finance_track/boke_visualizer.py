@@ -10,6 +10,7 @@ import pandas as pd
 from bokeh.layouts import gridplot
 from bokeh.models import ColumnDataSource, HoverTool, UIElement
 from bokeh.palettes import Category10
+from bokeh.transform import cumsum
 
 if TYPE_CHECKING:
     from finance_track.database import DatabaseManager
@@ -53,10 +54,10 @@ class ExpenseVisualizer:
         )
         p.wedge(
             x=0,
-            y=0,
+            y=1,
             radius=0.4,
-            start_angle=0,
-            end_angle="angle",
+            start_angle=cumsum("angle", include_zero=True),
+            end_angle=cumsum("angle"),
             line_color="white",
             fill_color="color",
             legend_field="category",
@@ -85,11 +86,11 @@ class ExpenseVisualizer:
         df["date"] = pd.to_datetime(df["date"])
 
         # Group by month and sum:
-        monthly = df.groupby(pd.Grouper(key="date", freq="M")).sum().reset_index()
+        monthly = df.groupby(pd.Grouper(key="date", freq="ME")).sum().reset_index()
         monthly["month"] = monthly["date"].dt.strftime("%Y-%m")
 
         # Bokeh source & plotting
-        source = ColumnDataSource(df)
+        source = ColumnDataSource(monthly)
         p = plt.figure(
             title=title,
             x_range=monthly["month"],
@@ -99,8 +100,7 @@ class ExpenseVisualizer:
             tools="pan,wheel_zoom,box_zoom,reset,save",
         )
         p.line("month", "amount", line_width=3, source=source)
-        p.circle("month", "amount", size=8, souce=source)
-
+        p.scatter("month", "amount", size=8, source=source)
         p.xaxis.major_label_orientation = math.pi / 4
 
         # Add a hover tool:

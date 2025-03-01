@@ -30,6 +30,8 @@ class DatabaseManager:
         except sqlite3.Error as err:
             raise RuntimeError("Database connection error") from err
 
+        self.create_tables()
+
     def create_tables(self) -> None:
         """Creation of the necessary tables if they don't exist."""
         cursor = self.conn.cursor()
