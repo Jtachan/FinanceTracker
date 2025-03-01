@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Optional
 import bokeh.plotting as plt
 import pandas as pd
 from bokeh.layouts import gridplot
-from bokeh.models import ColumnDataSource, UIElement
+from bokeh.models import ColumnDataSource, HoverTool, UIElement
 from bokeh.palettes import Category10
 
 if TYPE_CHECKING:
@@ -41,6 +41,7 @@ class ExpenseVisualizer:
         # Adding percentage information:
         df["percentage"] = (df["amount"] / df["amount"].sum() * 100).round(1)
 
+        # Bokeh source & plotting
         source = ColumnDataSource(df)
         p = plt.figure(
             title=title,
@@ -68,7 +69,46 @@ class ExpenseVisualizer:
 
         return p
 
-    def create_monthly_trend(self) -> UIElement: ...
+    def create_monthly_trend(
+        self, title: str = "Monthly Spending Trend"
+    ) -> Optional[UIElement]:
+        """Line chart showing monthly spending trend."""
+        expenses = self._db_manager.get_all_expenses()
+        if not expenses:
+            return None
+
+        # Converting into dataframe:
+        df = pd.DataFrame(expenses)
+        df.columns = ["id", "amount", "description", "date", "category"]
+
+        # Convert date strings to datetime:
+        df["date"] = pd.to_datetime(df["date"])
+
+        # Group by month and sum:
+        monthly = df.groupby(pd.Grouper(key="date", freq="M")).sum().reset_index()
+        monthly["month"] = monthly["date"].dt.strftime("%Y-%m")
+
+        # Bokeh source & plotting
+        source = ColumnDataSource(df)
+        p = plt.figure(
+            title=title,
+            x_range=monthly["month"],
+            height=400,
+            width=700,
+            toolbar_location="above",
+            tools="pan,wheel_zoom,box_zoom,reset,save",
+        )
+        p.line("month", "amount", line_width=3, source=source)
+        p.circle("month", "amount", size=8, souce=source)
+
+        p.xaxis.major_label_orientation = math.pi / 4
+
+        # Add a hover tool:
+        hover = HoverTool()
+        hover.tooltips = [("Month", "@month"), ("Total", "@amount{0,0.00}€")]
+        p.add_tools(hover)
+
+        return p
 
     def create_category_bar(self) -> UIElement: ...
 
