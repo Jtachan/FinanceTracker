@@ -30,10 +30,6 @@ class DatabaseManager:
         except sqlite3.Error as err:
             raise RuntimeError("Database connection error") from err
 
-        self.create_tables()
-
-    def create_tables(self) -> None:
-        """Creation of the necessary tables if they don't exist."""
         cursor = self.conn.cursor()
 
         # Creating the categories table:
@@ -109,6 +105,61 @@ class DatabaseManager:
         except sqlite3.Error as err:
             print(f"Error adding expense: {err}")
             return None
+
+    def extract_total_date_range(self) -> Optional[tuple[str, str]]:
+        """Extracting the minimum and maximum dates among the logged expenses."""
+        cursor = self.conn.cursor()
+        cursor.execute(
+            "SELECT MIN(date) AS min_date, MAX(date) AS max_date FROM expenses"
+        )
+        result = cursor.fetchone()
+
+        if result:
+            return result["min_date"], result["max_date"]
+        return None
+
+    def extract_existing_category_names(self) -> list[str]:
+        """Extracting all the category names."""
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT name FROM categories")
+        return sorted(r["name"] for r in cursor.fetchall())
+
+    def fetch_expenses(
+        self,
+        category_name: Optional[str] = None,
+        date_range: Optional[tuple[str, str]] = None,
+    ) -> list[tuple]:
+        """Fetching expenses from the database. Optional filters of category & date
+        can be provided. When neither is provided, all expenses are fetched.
+        """
+        cursor = self.conn.cursor()
+        conditions, params = [], []
+
+        if date_range:
+            try:
+                datetime.strptime(date_range[0], "%Y-%m-%d")
+                datetime.strptime(date_range[1], "%Y-%m-%d")
+                conditions.append("date BETWEEN ? AND ?")
+                params.extend(date_range)
+            except ValueError:
+                print("Invalid date format. Please use ISO format (YYYY-MM-DD).")
+
+        if category_name:
+            cursor.execute("SELECT id FROM categories WHERE name = ?", (category_name,))
+            result = cursor.fetchone()
+
+            if result:
+                conditions.append("category_id = ?")
+                params.append(result["id"])
+            else:
+                print(f"Category '{category_name}' was not found.")
+
+        query = "SELECT * FROM expenses"
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
+        cursor.execute(query, params)
+
+        return cursor.fetchall()
 
     def get_all_expenses(self) -> list:
         """Extract all expenses with category names."""
@@ -254,3 +305,7 @@ class DatabaseManager:
     def close(self) -> None:
         """Closing the database connection."""
         self.conn.close()
+
+
+if __name__ == '__main__':
+    DatabaseManager().extract_existing_category_names()
