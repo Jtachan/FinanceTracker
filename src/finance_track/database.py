@@ -100,11 +100,12 @@ class DatabaseManager:
                 (amount, description, date, category_id),
             )
             self.conn.commit()
-            return cursor.lastrowid
 
         except sqlite3.Error as err:
             print(f"Error adding expense: {err}")
             return None
+
+        return cursor.lastrowid
 
     def extract_total_date_range(self) -> Optional[tuple[str, str]]:
         """Extracting the minimum and maximum dates among the logged expenses."""

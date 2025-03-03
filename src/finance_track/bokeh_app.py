@@ -2,12 +2,20 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta
+
 from bokeh.io import curdoc
 from bokeh.layouts import column, row
-from bokeh.models import Div, TextInput, Select, DatePicker, Button, PreText, Tabs, \
-    Panel
-
-from datetime import datetime, timedelta
+from bokeh.models import (
+    Button,
+    DatePicker,
+    Div,
+    Panel,
+    PreText,
+    Select,
+    Tabs,
+    TextInput,
+)
 
 from finance_track.bokeh_visualizer import ExpenseVisualizer
 from finance_track.database import DatabaseManager
@@ -38,17 +46,25 @@ class FinanceTrackerApp:
 
         # Input components:
         self.amount_input = TextInput(title="Amount (€)", placeholder="Enter amount...")
-        self.description_input = TextInput(title="Description",
-                                           placeholder="Enter description...")
+        self.description_input = TextInput(
+            title="Description", placeholder="Enter description..."
+        )
 
         # Categories extracted from the database:
         categories = self._db_manager.extract_existing_category_names()
-        self.category_select = Select(title="Category", options=categories, value=categories[0])
+        self.category_select = Select(
+            title="Category", options=categories, value=categories[0]
+        )
 
         # Date picker with today set as default.
         # Allows selecting dates from two years past until today.
         today = datetime.now().date()
-        self.date_picker = DatePicker(title="Date", value =today, min_date=today - timedelta(days=365*2), max_date=today)
+        self.date_picker = DatePicker(
+            title="Date",
+            value=today,
+            min_date=today - timedelta(days=365 * 2),
+            max_date=today,
+        )
 
         # Button to add the expense:
         self.add_button = Button(label="Add Expense", button_type="seccess")
@@ -81,7 +97,9 @@ class FinanceTrackerApp:
         # --------------
         # Visualizations
         # --------------
-        self.viz_refresh_button = Button(label="Refresh visualizations", button_type="primary")
+        self.viz_refresh_button = Button(
+            label="Refresh visualizations", button_type="primary"
+        )
         self.viz_refresh_button.on_click(self._refresh_visualizations)
 
         # Containers
@@ -100,7 +118,10 @@ class FinanceTrackerApp:
         # ----------------------------------------
         tabs = Tabs(
             tabs=[
-                Panel(child=column(header, expense_form, expense_list), title="Track expenses"),
+                Panel(
+                    child=column(header, expense_form, expense_list),
+                    title="Track expenses",
+                ),
                 Panel(child=visualizations, title="Visualizations"),
             ]
         )
@@ -116,8 +137,6 @@ class FinanceTrackerApp:
     def _add_expense(self):
         ...
 
-    def _refresh_expense_list(self):
-        ...
+    def _refresh_expense_list(self): ...
 
-    def _refresh_visualizations(self):
-        ...
+    def _refresh_visualizations(self): ...

@@ -39,9 +39,11 @@ def _get_date_input(prompt: str) -> str:
 
         try:
             datetime.strptime(date_str, "%Y-%m-%d")
-            return date_str
         except ValueError:
             print("Invalid date format. Please use YYYY-MM-DD.")
+            continue
+
+        return date_str
 
 
 class CliFinanceTrack:
