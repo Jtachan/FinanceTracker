@@ -305,7 +305,3 @@ class DatabaseManager:
     def close(self) -> None:
         """Closing the database connection."""
         self.conn.close()
-
-
-if __name__ == '__main__':
-    DatabaseManager().extract_existing_category_names()
