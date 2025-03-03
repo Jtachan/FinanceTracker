@@ -172,10 +172,5 @@ class CliFinanceTrack:
             self._choices[choice]()
 
 
-def cli_run() -> None:
-    """Entry point for the command line interface. Runs the tool."""
-    CliFinanceTrack().run()
-
-
 if __name__ == "__main__":
-    cli_run()
+    CliFinanceTrack().run()

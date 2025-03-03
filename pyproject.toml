@@ -19,7 +19,7 @@ Homepage = "http://github/Jtachan/FinanceTracker.git"
 #Documentation = "https://readthedocs.org"
 
  [project.scripts]
- cli-finance = "finance_track.cli_ui:cli_run"
+ cli-finance = "finance_track._cli:run_minimal_ui"
 
 [project.optional-dependencies]
 dev = [
