@@ -3,7 +3,7 @@
 import sys
 from datetime import datetime
 
-from finance_track.boke_visualizer import ExpenseVisualizer
+from finance_track.bokeh_visualizer import ExpenseVisualizer
 from finance_track.database import DatabaseManager
 
 
@@ -32,22 +32,26 @@ def _get_float_input(prompt: str) -> float:
 
 
 def _get_date_input(prompt: str) -> str:
+    """Obtaining the date."""
     while True:
         date_str = input(f"{prompt} (YYYY-MM-DD, press Enter for today): ")
         if not date_str:
-            return datetime.now().strftime("%Y-%m-%d")
+            date_str = datetime.now().strftime("%Y-%m-%d")
+            break
 
         try:
             datetime.strptime(date_str, "%Y-%m-%d")
         except ValueError:
             print("Invalid date format. Please use YYYY-MM-DD.")
             continue
-
-        return date_str
+        break
+    return date_str
 
 
 class CliFinanceTrack:
+    """App to be run within the CLI."""
     def __init__(self):
+        """Constructor."""
         self._db = DatabaseManager()
         self._visualizer = ExpenseVisualizer(self._db)
         self._choices = {
@@ -154,11 +158,13 @@ class CliFinanceTrack:
         print("Dashboard created and opened in your web browser.")
 
     def close(self) -> None:
+        """Closing the app correctly."""
         self._db.close()
         print("Goodbye!")
         sys.exit(0)
 
     def run(self) -> None:
+        """Main loop to run."""
         while True:
             _print_menu()
             try:

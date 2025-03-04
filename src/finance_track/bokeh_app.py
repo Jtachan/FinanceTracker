@@ -10,9 +10,9 @@ from bokeh.models import (
     Button,
     DatePicker,
     Div,
-    Panel,
     PreText,
     Select,
+    TabPanel,
     Tabs,
     TextInput,
 )
@@ -67,7 +67,7 @@ class FinanceTrackerApp:
         )
 
         # Button to add the expense:
-        self.add_button = Button(label="Add Expense", button_type="seccess")
+        self.add_button = Button(label="Add entry", button_type="success")
         self.add_button.on_click(self._add_expense)
         self.status_message = Div(text="", width=400)
 
@@ -118,11 +118,11 @@ class FinanceTrackerApp:
         # ----------------------------------------
         tabs = Tabs(
             tabs=[
-                Panel(
+                TabPanel(
                     child=column(header, expense_form, expense_list),
                     title="Track expenses",
                 ),
-                Panel(child=visualizations, title="Visualizations"),
+                TabPanel(child=visualizations, title="Visualizations"),
             ]
         )
 
@@ -134,9 +134,82 @@ class FinanceTrackerApp:
         self._refresh_expense_list()
         self._refresh_visualizations()
 
-    def _add_expense(self):
-        ...
+    def _add_expense(self) -> None:
+        """Adding a new expense into the database."""
+        try:
+            amount = float(self.amount_input.value)
+            description = self.description_input.value
+            category = self.category_select.value
+            date = self.date_picker.value
 
-    def _refresh_expense_list(self): ...
+            expense_id = self._db_manager.add_expense(
+                amount=amount,
+                category_name=category,
+                date=date,
+                description=description,
+            )
+            if expense_id:
+                msg = "<p style='color:green'>Entry added!</p>"
+                # Clear form and refreshing values:
+                self.amount_input.value = ""
+                self.description_input.value = ""
+                self._refresh_expense_list()
+                self._refresh_visualizations()
+            else:
+                msg = "<p style='color:red'>Failed to add entry</p>"
+        except BaseException:  # noqa: BLE001
+            msg = "<p style='color:red'>Failed to add entry</p>"
+        self.status_message.text = msg
 
-    def _refresh_visualizations(self): ...
+    def _refresh_expense_list(self):
+        """Refresh the expense list display."""
+        expenses = self._db_manager.get_all_expenses()
+
+        if expenses:
+            header = (
+                f"{'ID':<5}{'Date':<12}{'Category':<15}{'Amount':<10}"
+                f"{'Description':<30}"
+            )
+            separator = "-" * 72
+            rows = [header, separator]
+
+            # Displaying the last 20 entries:
+            for expense in expenses[:20]:
+                exp_row = (
+                    f"{expense['id']:<5}{expense['date']:<12}"
+                    f"{expense['category']:<15}{expense['amount']:<10.2f}"
+                    f"{expense['description']:<30}"
+                )
+                rows.append(exp_row)
+
+            if len(expenses) > 20:
+                rows.append(
+                    "Displaying only the 20 last entries. Use visualizations "
+                    "to see all data."
+                )
+            self.expense_table.text = "\n".join(rows)
+
+        else:
+            self.expense_table.text = "No expenses found."
+
+    def _refresh_visualizations(self):
+        """Refresh the visualization displays."""
+        self.pie_chart_container.children = []
+        self.trend_chart_container.children = []
+
+        if pie_chart := self._visualizer.create_category_pie_chart():
+            self.pie_chart_container.children = [pie_chart]
+        else:
+            self.pie_chart_container.children = [
+                Div(text="<p>Not enough data for category chart</p>")
+            ]
+
+        if trend_chart := self._visualizer.create_monthly_trend():
+            self.trend_chart_container.children = [trend_chart]
+        else:
+            self.trend_chart_container.children = [
+                Div(text="<p>Not enough data for trend chart</p>")
+            ]
+
+
+app = FinanceTrackerApp()

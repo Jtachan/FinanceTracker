@@ -20,6 +20,7 @@ Homepage = "http://github/Jtachan/FinanceTracker.git"
 
  [project.scripts]
  cli-finance = "finance_track._cli:run_minimal_ui"
+ web-finance = "finance_track._cli:run_bokeh_ui"
 
 [project.optional-dependencies]
 dev = [
