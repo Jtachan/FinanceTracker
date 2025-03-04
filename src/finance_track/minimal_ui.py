@@ -50,6 +50,7 @@ def _get_date_input(prompt: str) -> str:
 
 class CliFinanceTrack:
     """App to be run within the CLI."""
+
     def __init__(self):
         """Constructor."""
         self._db = DatabaseManager()
