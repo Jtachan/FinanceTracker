@@ -5,7 +5,6 @@ Tool to track your expenses and graphically plot them.
 > Information: The tool is still on development. Beware the usage could change in the future.
 
 > Information: The following features are soon to be implemented:
->    - More interactive UI with Bokeh
 >    - More interactive UI with PyQt
 >    - Additional filtering options over the plots
 >    - Allow to track incomes & display monthly income vs expenses
@@ -31,9 +30,20 @@ All expenses are stored here, do not delete the file.
 
 ## Usage
 
+### Bokeh UI
+
+The tool can be run locally on a web browser, using `bokeh` as backend.
+This feature is accessible via the CLI:
+
+```bash
+web-finance
+```
+
+![bokeh_app](./docs/imgs/bokeh_app.gif)
+
 ### Minimal UI
 
-The tool has a minimal UI by ussing the terminal.
+The tool has a minimal UI by using the terminal.
 The UI is accessible via the following call:
 
 ```bash
