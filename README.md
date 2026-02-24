@@ -2,12 +2,9 @@
 
 Tool to track your expenses and graphically plot them.
 
-> Information: The tool is still on development. Beware the usage could change in the future.
-
-> Information: The following features are soon to be implemented:
->    - More interactive UI with PyQt
->    - Additional filtering options over the plots
->    - Allow to track incomes & display monthly income vs expenses
+> Information: 
+>   The tool is "finished". I will not continue developing it, as it was to be just a small project to display databases with Bokeh.
+>   If you like it but want more features, feel free to fork it and work on them.
 
 ## 🐍 Python Setup
 
@@ -39,7 +36,7 @@ This feature is accessible via the CLI:
 web-finance
 ```
 
-![bokeh_app](./docs/imgs/bokeh_app.gif)
+![bokeh_app](./imgs/bokeh_app.gif)
 
 ### Minimal UI
 
@@ -52,7 +49,7 @@ cli-finance
 
 The minimal UI is defined by a menu of valid operations to perform.
 
-![minimal_ui](docs/imgs/minimal_ui.png)
+![minimal_ui](./imgs/minimal_ui.png)
 
 The data visualization at this mode is either by selecting options 2 or 3, which will print a table over the terminal (as shown in the following images);
 or by option 6, displaying graphical plots over a locally hosted HTML page.
@@ -83,8 +80,8 @@ Pharmacy        $15.00
 
 ### Expenses per category
 
-![pie_chart](docs/imgs/pie_chart.png)
+![pie_chart](./imgs/pie_chart.png)
 
 ### Monthly trend
 
-![trend](./docs/imgs/monthly_trend.png)
+![trend](./imgs/monthly_trend.png)
